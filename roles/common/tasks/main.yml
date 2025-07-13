@@ -15,5 +15,5 @@
 - name: Include Kubernetes installation tasks
   include_tasks: kubernetes.yml
 - name: Include br_netfilter
-  include_tasks: br_netfilter.yml
+  include_tasks: br-netfilter.yml
 

@@ -12,7 +12,7 @@
     - gnupg
     - lsb-release
 
-- name : Enable ans and start Docker service
+- name : Enable and and start Docker service
   systemd:
     name: docker
     enabled: yes

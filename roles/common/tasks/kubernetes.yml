@@ -21,13 +21,12 @@
     - kubectl
 
 - name: Hold Kubernetes packages at current version
-  apt:
-    name: "{{ item }}"
-    state: hold
+  command: apt-mark hold {{ item }}
   loop:
     - kubelet
     - kubeadm
     - kubectl
+  changed_when: false
 
 - name: Disable swap
   shell: |

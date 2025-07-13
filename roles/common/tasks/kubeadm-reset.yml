@@ -1,5 +1,4 @@
 ---
-
 - name: Reset Kubernetes master (if needed)
   shell: kubeadm reset -f
   ignore_errors: true
