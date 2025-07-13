@@ -3,10 +3,8 @@
 
 This project automates the setup of a Kubernetes cluster using Ansible. It provisions one master node and one or more worker nodes. The setup includes Docker installation, system configuration, Kubernetes component installation, and joining workers to the cluster.
 
----
-```
----
-## ⚙️ Prerequisites
+
+## Prerequisites
 
 ### 1️⃣ Generate and Use SSH Key
 
