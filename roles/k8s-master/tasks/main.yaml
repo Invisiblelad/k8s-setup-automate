@@ -1,6 +1,13 @@
 ---
-- name: Include Docker tasks
-  include_tasks: docker.yml
+- name: Include common docker tasks
+  include_role:
+    name: common
+    tasks_from: docker
+
+- name: Include common kubernetes tasks
+  include_role:
+    name: common
+    tasks_from: kubernetes
 
 - name: Include Kubernetes installation tasks
   include_tasks: master-components.yaml

@@ -1,7 +1,19 @@
 ---
+- name: Check if kubeadm is installed
+  ansible.builtin.command: which kubeadm
+  register: kubeadm_check
+  ignore_errors: true
+
+- name: Reset Kubernetes master 
+  include_tasks: kubeadm-reset.yml
+  when: kubeadm_check.rc == 0
+
+
 - name: Include Docker tasks
   include_tasks: docker.yml
 
 - name: Include Kubernetes installation tasks
   include_tasks: kubernetes.yml
+- name: Include br_netfilter
+  include_tasks: br_netfilter.yml
 

@@ -1,0 +1,31 @@
+- name: Load br_netfilter kernel module
+  become: true
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Ensure sysctl values for bridge networking are set
+  become: true
+  copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-iptables = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+
+- name: Apply sysctl settings
+  become: true
+  command: sysctl --system
+
+- name: Check if bridge-nf-call-iptables exists
+  become: true
+  stat:
+    path: /proc/sys/net/bridge/bridge-nf-call-iptables
+  register: bridge_nf_check
+
+- name: Fail if bridge-nf-call-iptables is still missing
+  become: true
+  fail:
+    msg: >
+      br_netfilter module loaded, but /proc/sys/net/bridge/bridge-nf-call-iptables is missing.
+      This indicates a possible kernel issue. Do NOT manually create /proc entries.
+  when: not bridge_nf_check.stat.exists

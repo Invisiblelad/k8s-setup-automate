@@ -3,8 +3,16 @@
   hostname:
     name: master
 
+- name: Get master private IP
+  ansible.builtin.command: hostname -I
+  register: master_ip_output
+
+- name: Set master API server endpoint (default K8s port 6443)
+  set_fact:
+    api_server_endpoint: "{{ master_ip_output.stdout.split()[0] }}:6443"
+
 - name: Initialize Kubernetes master
-  command: kubeadm init --pod-network-cidr={{ pod_network_cidr }} --upload-certs
+  command: kubeadm init --pod-network-cidr=10.244.0.0/16 --upload-certs
   register: kubeadm_init
   args:
     creates: /etc/kubernetes/admin.conf
@@ -12,7 +20,7 @@
 - name: Configure kubectl for root user
   shell: |
     mkdir -p /root/.kube
-    cp -i /etc/kubernetes/admin.conf /root/.kube/config
+    cp  /etc/kubernetes/admin.conf /root/.kube/config
     chown root:root /root/.kube/config
   when: kubeadm_init.changed
 
@@ -33,4 +41,11 @@
   set_fact:
     kubeadm_join_token: "{{ kubeadm_token.stdout }}"
     discovery_token_ca_cert_hash: "{{ discovery_hash.stdout }}"
-  when: kubeadm_init.changed
+
+- name: Share join info with all hosts
+  add_host:
+    name: all
+    groups: dynamic_join
+    api_server_endpoint: "{{ api_server_endpoint }}"
+    kubeadm_token: "{{ kubeadm_join_token }}"
+    discovery_token_ca_cert_hash: "{{ discovery_token_ca_cert_hash }}"

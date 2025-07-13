@@ -1,8 +1,25 @@
 ---
+- name: Include common docker tasks
+  include_role:
+    name: common
+    tasks_from: docker
+
+- name: Include common kubernetes tasks
+  include_role:
+    name: common
+    tasks_from: kubernetes
+
+- name: Wait for API server to be reachable
+  wait_for:
+    host: "{{ hostvars['all']['api_server_endpoint'].split(':')[0] }}"
+    port: 6443
+    timeout: 60
+
 - name: Join the Kubernetes cluster
   command: >
-    kubeadm join {{ api_server_endpoint }}
-    --token {{ hostvars[groups['master'][0]].kubeadm_join_token }}
-    --discovery-token-ca-cert-hash sha256:{{ hostvars[groups['master'][0]].discovery_token_ca_cert_hash }}
+    kubeadm join {{ hostvars['all']['api_server_endpoint'] }}
+    --token {{ hostvars['all']['kubeadm_token'] }}
+    --discovery-token-ca-cert-hash sha256:{{ hostvars['all']['discovery_token_ca_cert_hash'] }}
   args:
     creates: /etc/kubernetes/kubelet.conf
+  become: true
