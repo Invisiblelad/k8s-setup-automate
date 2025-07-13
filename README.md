@@ -31,7 +31,7 @@ worker ansible_host=<IP Address> ansible_user=<user> node_type=worker ansible_ss
 ```
 ---
 
-##  What Each Role Does
+### 3️⃣ What Each Role Does
 
 ### `common/` Role
 
@@ -55,7 +55,7 @@ worker ansible_host=<IP Address> ansible_user=<user> node_type=worker ansible_ss
 
 ---
 
-##  Run the Playbook
+### 4️⃣ Run the Playbook
 
 1. Ensure you can SSH into your nodes:
 
@@ -71,7 +71,7 @@ ansible-playbook -i inventory/hosts.ini playbook.yml
 
 ---
 
-## Validation
+### 5️⃣ Validation
 
 After the playbook completes:
 
@@ -91,7 +91,7 @@ You should see both the master and worker nodes in a `Ready` state.
 
 ---
 
-## Troubleshooting
+### 6️⃣ Troubleshooting
 
 | Problem | Solution |
 |--------|----------|
@@ -102,7 +102,7 @@ You should see both the master and worker nodes in a `Ready` state.
 
 ---
 
-## Resetting the Cluster
+### 7️⃣  Resetting the Cluster
 
 You can manually reset your Kubernetes setup with:
 
