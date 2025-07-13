@@ -1,0 +1,7 @@
+---
+- name: Include Docker tasks
+  include_tasks: docker.yml
+
+- name: Include Kubernetes installation tasks
+  include_tasks: kubernetes.yml
+

@@ -1,0 +1,10 @@
+---
+- name: Kubernetes Cluster Setup
+  hosts: all
+  become: true
+  roles:
+    - common
+    - role: k8s-master
+      when: node_type == "master"
+    - role: k8s-worker
+      when: node_type == "worker"

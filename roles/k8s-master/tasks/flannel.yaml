@@ -1,0 +1,10 @@
+--- 
+- name: Download Flannerl Manifest
+  get_url: 
+     url: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel.yml
+     dest: /tmp/kube-flannel.yml
+
+- name: Apply Flannel Manifest
+  command: kubectl apply -f /tmp/kube-flannel.yml
+  register: flannel_apply
+  ignore_errors: true

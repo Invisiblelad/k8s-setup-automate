@@ -1,0 +1,60 @@
+---
+- name: Add Kuberneted GPG key 
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+- name: Add Kubernetes apt repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /"
+    state: present
+    filename: kubernetes
+    update_cache: yes
+
+- name : Install Kubernetes components
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Hold Kubernetes packages at current version
+  apt:
+    name: "{{ item }}"
+    state: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Disable swap
+  shell: |
+    swapoff -a
+    sed -i '/ swap / s/^/#/' /etc/fstab
+
+# - name: set hostname
+#   hostname:
+#     name: "{{ inventory_hostname }}"
+#   when: inventory_hostname != "localhost"
+
+# - name: Initialize the Kubernetes
+#   command : kubeadm init --pod-network-cidr=10.244.0.0/16
+#   register: kubeadm_init
+#   ignore_errors: yes
+
+# - name: Create a kube config directory
+#   file:
+#     path: /home/{{ ansible_user }}/.kube
+#     state: directory
+#     mode: '0755'
+    
+# - name: Copy kube config file
+#   copy:
+#     src: /etc/kubernetes/admin.conf
+#     dest: /home/{{ ansible_user }}/.kube/config
+#     owner: "{{ ansible_user }}"
+#     group: "{{ ansible_user }}"
+#     mode: '0644'
+#   when: kubeadm_init is changed

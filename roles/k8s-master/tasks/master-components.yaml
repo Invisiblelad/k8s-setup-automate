@@ -1,0 +1,36 @@
+---
+- name: Set hostname to master
+  hostname:
+    name: master
+
+- name: Initialize Kubernetes master
+  command: kubeadm init --pod-network-cidr={{ pod_network_cidr }} --upload-certs
+  register: kubeadm_init
+  args:
+    creates: /etc/kubernetes/admin.conf
+
+- name: Configure kubectl for root user
+  shell: |
+    mkdir -p /root/.kube
+    cp -i /etc/kubernetes/admin.conf /root/.kube/config
+    chown root:root /root/.kube/config
+  when: kubeadm_init.changed
+
+- name: Generate kubeadm token
+  command: kubeadm token create
+  register: kubeadm_token
+  when: kubeadm_init.changed
+
+- name: Generate discovery token CA cert hash
+  shell: |
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
+    openssl rsa -pubin -outform der 2>/dev/null | \
+    openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: discovery_hash
+  when: kubeadm_init.changed
+
+- name: Set join command facts
+  set_fact:
+    kubeadm_join_token: "{{ kubeadm_token.stdout }}"
+    discovery_token_ca_cert_hash: "{{ discovery_hash.stdout }}"
+  when: kubeadm_init.changed

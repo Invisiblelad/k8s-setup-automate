@@ -1,0 +1,8 @@
+---
+- name: Join the Kubernetes cluster
+  command: >
+    kubeadm join {{ api_server_endpoint }}
+    --token {{ hostvars[groups['master'][0]].kubeadm_join_token }}
+    --discovery-token-ca-cert-hash sha256:{{ hostvars[groups['master'][0]].discovery_token_ca_cert_hash }}
+  args:
+    creates: /etc/kubernetes/kubelet.conf

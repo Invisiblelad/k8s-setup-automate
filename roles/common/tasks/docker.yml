@@ -1,0 +1,20 @@
+--- 
+- name : Install Docker and dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - docker.io
+    - curl
+    - apt-transport-https
+    - ca-certificates
+    - gnupg
+    - lsb-release
+
+- name : Enable ans and start Docker service
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+  
